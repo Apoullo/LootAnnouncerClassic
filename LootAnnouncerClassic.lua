@@ -68,7 +68,7 @@ local Announcement = function ()
 			if itemRarity ~= nil then break end
 		end
 
-		if itemRarity~=nil and itemRarity > -1 then
+		if itemRarity~=nil and itemRarity > 3 then
 			if itemSetID~=nil then
 				set = set..itemLink
 			elseif itemClassID==LE_ITEM_CLASS_WEAPON then

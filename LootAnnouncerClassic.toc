@@ -1,6 +1,6 @@
 ## Interface: 11303
 ## Title: Loot Announcer Classic
-## Version: 1.0.1
+## Version: 1.0.2
 ## Author: Apollo in Taiwan
 ## Notes: A simple button append on LootFrame that can announce all dropped items of epic quality or better. 
 
