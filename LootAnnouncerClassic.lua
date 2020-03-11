@@ -9,8 +9,14 @@ local L = {}
 
 if GetLocale() == "zhTW" then
 	L["Announce"] = "公告紫裝"
+	L["Weapon"] = "武器"
+	L["Set"] = "套裝"
+	L["Other"] = "散裝"
 else
 	L["Announce"] = "Announce"
+	L["Weapon"] = "Weapon"
+	L["Set"] = "Set"
+	L["Other"] = "Other"
 end
 
 local ui_button = nil
@@ -53,34 +59,35 @@ local Announcement = function ()
 	local weapon = ""
 	local set = ""
 	local other = ""
-	for i = 1, GetNumLootItems() do
+	for i = 1, GetNumLootItems() do	
 		local itemLink = nil
-		for j = 1, 10 do
+		for j = 1, 10 do	-- 多Query幾次, 確保有拿到物品資訊
 			itemLink = GetLootSlotLink(i)
 			if itemLink ~= nil then break end
 		end
+		if itemLink ~= nil then	-- 有拿到物品資訊才做後續動作
+			local itemRarity = nil
+			local itemClassID = nil
+			local itemSetID = nil
+			for j = 1, 10 do	-- 多Query幾次, 確保有拿到物品資訊
+				_, _, itemRarity, _, _, _, _, _,_, _, _, itemClassID, _, _, _, itemSetID = GetItemInfo(itemLink)
+				if itemRarity ~= nil then break end
+			end
 
-		local itemRarity = nil
-		local itemClassID = nil
-		local itemSetID = nil
-		for j = 1, 10 do	
-			_, _, itemRarity, _, _, _, _, _,_, _, _, itemClassID, _, _, _, itemSetID = GetItemInfo(itemLink)
-			if itemRarity ~= nil then break end
-		end
-
-		if itemRarity~=nil and itemRarity > 3 then
-			if itemSetID~=nil then
-				set = set..itemLink
-			elseif itemClassID==LE_ITEM_CLASS_WEAPON then
-				weapon = weapon..itemLink
-			else 
-				other = other..itemLink
+			if itemRarity~=nil and itemRarity > 3 then
+				if itemSetID~=nil then
+					set = set..itemLink
+				elseif itemClassID==LE_ITEM_CLASS_WEAPON then
+					weapon = weapon..itemLink
+				else 
+					other = other..itemLink
+				end
 			end
 		end
 	end
-	if set ~= "" then set = "Set:"..set end
-	if weapon ~= "" then weapon = "Weapon:"..weapon end
-	if other ~= "" then other = "Armor:"..other end
+	if set ~= "" then set = L["Set"] ..set end
+	if weapon ~= "" then weapon = L["Weapon"] ..weapon end
+	if other ~= "" then other = L["Other"]..other end
 	local set_len = strlen(set)
 	local weapon_len = strlen(weapon)
 	local other_len = strlen(other)
