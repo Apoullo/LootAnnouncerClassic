@@ -9,9 +9,9 @@ local L = {}
 
 if GetLocale() == "zhTW" then
 	L["Announce"] = "公告紫裝"
-	L["Weapon"] = "武器"
-	L["Set"] = "套裝"
-	L["Other"] = "散裝"
+	L["Weapon"] = "武器:"
+	L["Set"] = "套裝:"
+	L["Other"] = "散裝:"
 else
 	L["Announce"] = "Announce"
 	L["Weapon"] = "Weapon"
@@ -59,6 +59,9 @@ local Announcement = function ()
 	local weapon = ""
 	local set = ""
 	local other = ""
+	local set_len = 0
+	local weapon_len = 0
+	local other_len = 0
 	for i = 1, GetNumLootItems() do	
 		local itemLink = nil
 		for j = 1, 10 do	-- 多Query幾次, 確保有拿到物品資訊
@@ -75,12 +78,15 @@ local Announcement = function ()
 			end
 
 			if itemRarity~=nil and itemRarity > 3 then
-				if itemSetID~=nil then
-					set = set..itemLink
-				elseif itemClassID==LE_ITEM_CLASS_WEAPON then
+				if itemClassID==LE_ITEM_CLASS_WEAPON then
 					weapon = weapon..itemLink
+					weapon_len = weapon_len + 1
+				elseif itemSetID~=nil then
+					set = set..itemLink
+					set_len = set_len + 1
 				else 
 					other = other..itemLink
+					other_len = other_len + 1
 				end
 			end
 		end
@@ -88,20 +94,17 @@ local Announcement = function ()
 	if set ~= "" then set = L["Set"] ..set end
 	if weapon ~= "" then weapon = L["Weapon"] ..weapon end
 	if other ~= "" then other = L["Other"]..other end
-	local set_len = strlen(set)
-	local weapon_len = strlen(weapon)
-	local other_len = strlen(other)
-
-	if set_len + weapon_len + other_len <= 255 then
-		SendChatMessage( weapon..other..set, get_announce_target(), nil, nil) 
-	elseif weapon_len + other_len <= 255 then
-		SendChatMessage( weapon..other, get_announce_target(), nil, nil) 
+	
+	if set_len + weapon_len + other_len <= 4 then
+		SendChatMessage( weapon.." "..other.." "..set, get_announce_target(), nil, nil) 
+	elseif weapon_len + other_len <= 4 then
+		SendChatMessage( weapon.." "..other, get_announce_target(), nil, nil) 
 		SendChatMessage( set, get_announce_target(), nil, nil) 
-	elseif other_len + set_len <= 255 then
+	elseif other_len + set_len <= 4 then
 		SendChatMessage( weapon, get_announce_target(), nil, nil) 
-		SendChatMessage( other..set, get_announce_target(), nil, nil) 
-	elseif weapon_len + set_len <= 255 then
-		SendChatMessage( weapon..set, get_announce_target(), nil, nil) 
+		SendChatMessage( other.." "..set, get_announce_target(), nil, nil) 
+	elseif weapon_len + set_len <= 4 then
+		SendChatMessage( weapon.." "..set, get_announce_target(), nil, nil) 
 		SendChatMessage( other, get_announce_target(), nil, nil) 
 	else
 		SendChatMessage( weapon, get_announce_target(), nil, nil) 
